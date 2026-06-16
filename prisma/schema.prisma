@@ -4,24 +4,34 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 model Vehicle {
-  id             String  @id @default(uuid())
-  numCar         String  @unique
+  id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // UUID nativo de Postgres
+  numCar         String        @unique
   seatCount      Int
-  currentMileage Float   @default(0)
+  currentMileage Float         @default(0)
   brand          String
-  isActive       Boolean @default(true)
-  status         String  @default("DISPONIBLE")
-  dateIn         String? @unique
-  dateEnd        String? @unique
+  isActive       Boolean       @default(true)
+  status         StatusVehicle @default(DISPONIBLE)
+
+  dateIn  String? @unique @db.Text
+  dateEnd String? @unique @db.Text
 
   @@index([isActive])
+}
+
+enum StatusVehicle {
+  CIUDAD     @map("trabajando en la ciudad")
+  INTERIOR   @map("interior")
+  DISPONIBLE @map("disponible")
+  TALLER     @map("taller")
+  OTRO       @map("otro")
 }

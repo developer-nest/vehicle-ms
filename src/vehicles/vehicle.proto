@@ -1,0 +1,72 @@
+
+syntax = "proto3";
+
+package vehicle;
+
+service VehiclesService { 
+  rpc Create (CreateVehicleDto) returns (Vehicle) {}
+  rpc FindAll (PaginationDTO) returns (VehicleList) {}
+  rpc FindOne (VehicleById) returns (Vehicle) {}
+  rpc Update (UpdateVehicleDto) returns (Vehicle) {}
+  rpc Remove (VehicleById) returns (Vehicle) {}
+}
+
+message VehicleById {
+  string id = 1;
+}
+
+enum StatusVehicle {
+  CIUDAD = 0; // El valor 0 debe ser el predeterminado
+  INTERIOR = 1;
+  DISPONIBLE = 2;
+  TALLER = 3;
+  OTRO = 4;
+}
+
+message Vehicle {
+  string id = 1;
+  string numCar = 2;
+  int32 seatCount = 3;
+  float currentMileage = 4;
+  string dateIn = 5;
+  string dateEnd = 6;
+  bool isActive = 7;
+  StatusVehicle status = 8;
+  string brand = 9;
+}
+
+message CreateVehicleDto {  
+  string numCar = 1;
+  int32 seatCount = 2;
+  float currentMileage = 3;
+  string dateIn = 4;
+  string dateEnd = 5;
+  bool isActive = 6;
+  StatusVehicle status = 7;
+  string brand = 8;
+}
+
+message UpdateVehicleDto {  
+  string id = 1;
+  string numCar = 2;
+  int32 seatCount = 3;
+  float currentMileage = 4;
+  string dateIn = 5;
+  string dateEnd = 6;
+  bool isActive = 7;
+  StatusVehicle status = 8;
+  string brand = 9;
+}
+
+message VehicleList {
+  repeated Vehicle items = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 limit = 4;
+  int32 totalPages = 5;
+}
+
+message PaginationDTO {  
+  int32 limit = 1;
+  int32 page = 2;  
+}

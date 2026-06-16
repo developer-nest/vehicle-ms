@@ -1,28 +1,30 @@
 /* eslint-disable prettier/prettier */
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { envs } from './config/envs';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { join } from 'node:path';
 
 async function bootstrap() {
   const logger = new Logger('Main');
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AppModule,
     {
-      transport: Transport.TCP,
+      logger: ['error', 'warn', 'log', 'debug', 'verbose'],
+      transport: Transport.GRPC,
       options: {
-        port: envs.port,
+        package: 'vehicle',
+        protoPath: join(process.cwd(), 'dist/vehicles/vehicle.proto'),
+        url: `localhost:${envs.port}`,
+        loader: {
+          enums: String,
+        },
+        //port: envs.port,
       },
     },
   );
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-    }),
-  );
+
   await app.listen();
   logger.log(`Application is running on: ${envs.port}`);
 }
